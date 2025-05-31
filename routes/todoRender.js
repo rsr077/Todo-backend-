@@ -21,6 +21,26 @@ router.put("/completed", async (req, res) => {
   const updated = await Todo.findByIdAndUpdate(id, { completed: true }, { new: true });
   res.json(updated);
 });
+// server/routes/todos.js or similar
+router.put('/todos/:id', async (req, res) => {
+  const { id } = req.params;
+  const { title, description } = req.body;
+
+  if (!title || !description) {
+    return res.status(400).json({ error: 'Missing fields' });
+  }
+
+  try {
+    const updated = await Todo.findByIdAndUpdate(id, { title, description }, { new: true });
+    if (!updated) {
+      return res.status(404).json({ error: 'Todo not found' });
+    }
+    res.json({ message: 'Todo updated', todo: updated });
+  } catch (err) {
+    res.status(500).json({ error: 'Server error' });
+  }
+});
+
 
 // Delete todo
 router.delete("/todos/:id", async (req, res) => {
